@@ -1,0 +1,361 @@
+syntax = "proto3";
+
+package api;
+
+option go_package = "github.com/chirpstack/chirpstack/api/go/v4/api";
+option java_package = "io.chirpstack.api";
+option java_multiple_files = true;
+option java_outer_classname = "DeviceProto";
+option csharp_namespace = "Chirpstack.Api";
+option php_namespace = "Chirpstack\\Api";
+option php_metadata_namespace = "GPBMetadata\\Chirpstack\\Api";
+
+import "common/common.proto";
+import "google/api/annotations.proto";
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/struct.proto";
+import "google/protobuf/empty.proto";
+
+service DeviceService {
+  // Create the given device.
+  rpc Create(CreateDeviceRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post : "/api/devices"
+      body : "*"
+    };
+  }
+  rpc Get(GetDeviceRequest) returns (GetDeviceResponse) {
+    option (google.api.http) = {
+      get : "/api/devices/{dev_eui}"
+    };
+  }
+  rpc Update(UpdateDeviceRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      put : "/api/devices/{device.dev_eui}"
+      body : "*"
+    };
+  }
+  rpc Delete(DeleteDeviceRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete : "/api/devices/{dev_eui}"
+    };
+  }
+  rpc List(ListDevicesRequest) returns (ListDevicesResponse) {
+    option (google.api.http) = {
+      get : "/api/devices"
+    };
+  }
+  rpc CreateKeys(CreateDeviceKeysRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post : "/api/devices/{device_keys.dev_eui}/keys"
+      body : "*"
+    };
+  }
+  rpc GetKeys(GetDeviceKeysRequest) returns (GetDeviceKeysResponse) {
+    option (google.api.http) = {
+      get : "/api/devices/{dev_eui}/keys"
+    };
+  }
+  rpc UpdateKeys(UpdateDeviceKeysRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      put : "/api/devices/{device_keys.dev_eui}/keys"
+      body : "*"
+    };
+  }
+  rpc DeleteKeys(DeleteDeviceKeysRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete : "/api/devices/{dev_eui}/keys"
+    };
+  }
+  rpc FlushDevNonces(FlushDevNoncesRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete : "/api/devices/{dev_eui}/dev-nonces"
+    };
+  }
+  rpc Activate(ActivateDeviceRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post : "/api/devices/{device_activation.dev_eui}/activate"
+      body : "*"
+    };
+  }
+  rpc Deactivate(DeactivateDeviceRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete : "/api/devices/{dev_eui}/activation"
+    };
+  }
+  rpc GetActivation(GetDeviceActivationRequest)
+      returns (GetDeviceActivationResponse) {
+    option (google.api.http) = {
+      get : "/api/devices/{dev_eui}/activation"
+    };
+  }
+  rpc GetRandomDevAddr(GetRandomDevAddrRequest)
+      returns (GetRandomDevAddrResponse) {
+    option (google.api.http) = {
+      post : "/api/devices/{dev_eui}/get-random-dev-addr"
+    };
+  }
+  rpc GetMetrics(GetDeviceMetricsRequest) returns (GetDeviceMetricsResponse) {
+    option (google.api.http) = {
+      get : "/api/devices/{dev_eui}/metrics"
+    };
+  }
+  rpc GetLinkMetrics(GetDeviceLinkMetricsRequest)
+      returns (GetDeviceLinkMetricsResponse) {
+    option (google.api.http) = {
+      get : "/api/devices/{dev_eui}/link-metrics"
+    };
+  }
+  rpc Enqueue(EnqueueDeviceQueueItemRequest)
+      returns (EnqueueDeviceQueueItemResponse) {
+    option (google.api.http) = {
+      post : "/api/devices/{queue_item.dev_eui}/queue"
+      body : "*"
+    };
+  }
+  rpc FlushQueue(FlushDeviceQueueRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete : "/api/devices/{dev_eui}/queue"
+    };
+  }
+  rpc GetQueue(GetDeviceQueueItemsRequest)
+      returns (GetDeviceQueueItemsResponse) {
+    option (google.api.http) = {
+      get : "/api/devices/{dev_eui}/queue"
+    };
+  }
+  rpc GetNextFCntDown(GetDeviceNextFCntDownRequest)
+      returns (GetDeviceNextFCntDownResponse) {
+    option (google.api.http) = {
+      post : "/api/devices/{dev_eui}/get-next-f-cnt-down"
+      body : "*"
+    };
+  }
+}
+
+message Device {
+  string dev_eui = 1;
+  string name = 2;
+  string description = 3;
+  string application_id = 4;
+  string device_profile_id = 5;
+  bool skip_fcnt_check = 6;
+  bool is_disabled = 7;
+  map<string, string> variables = 8;
+  map<string, string> tags = 9;
+  string join_eui = 10;
+}
+
+message DeviceStatus {
+  int32 margin = 1;
+  bool external_power_source = 2;
+  float battery_level = 3;
+}
+
+message DeviceListItem {
+  string dev_eui = 1;
+  google.protobuf.Timestamp created_at = 2;
+  google.protobuf.Timestamp updated_at = 3;
+  google.protobuf.Timestamp last_seen_at = 4;
+  string name = 5;
+  string description = 6;
+  string device_profile_id = 7;
+  string device_profile_name = 8;
+  DeviceStatus device_status = 9;
+  map<string, string> tags = 10;
+}
+
+message DeviceKeys {
+  string dev_eui = 1;
+  string nwk_key = 2;
+  string app_key = 3;
+  string gen_app_key = 4;
+}
+
+message CreateDeviceRequest {
+  Device device = 1;
+}
+
+message GetDeviceRequest {
+  string dev_eui = 1;
+}
+
+message GetDeviceResponse {
+  Device device = 1;
+  google.protobuf.Timestamp created_at = 2;
+  google.protobuf.Timestamp updated_at = 3;
+  google.protobuf.Timestamp last_seen_at = 4;
+  DeviceStatus device_status = 5;
+  common.DeviceClass class_enabled = 6;
+}
+
+message UpdateDeviceRequest {
+  Device device = 1;
+}
+
+message DeleteDeviceRequest {
+  string dev_eui = 1;
+}
+
+message ListDevicesRequest {
+  uint32 limit = 1;
+  uint32 offset = 2;
+  string search = 3;
+  string application_id = 4;
+  // Multicst-group ID (UUID) to filter devices on.
+  string multicast_group_id = 5;
+
+  enum OrderBy {
+    NAME = 0;
+    DEV_EUI = 1;
+    LAST_SEEN_AT = 2;
+    DEVICE_PROFILE_NAME = 3;  
+  }
+  OrderBy order_by = 6;
+  bool order_by_desc = 7;
+  map<string, string> tags = 8;
+  string device_profile_id = 9;
+}
+
+message ListDevicesResponse {
+  uint32 total_count = 1;
+  repeated DeviceListItem result = 2;
+}
+
+message CreateDeviceKeysRequest {
+  DeviceKeys device_keys = 1;
+}
+
+message GetDeviceKeysRequest {
+  string dev_eui = 1;
+}
+
+message GetDeviceKeysResponse {
+  DeviceKeys device_keys = 1;
+  google.protobuf.Timestamp created_at = 2;
+  google.protobuf.Timestamp updated_at = 3;
+}
+
+message UpdateDeviceKeysRequest {
+  DeviceKeys device_keys = 1;
+}
+
+message DeleteDeviceKeysRequest {
+  string dev_eui = 1;
+}
+
+message DeviceActivation {
+  string dev_eui = 1;
+  string dev_addr = 2;
+  string app_s_key = 3;
+  string nwk_s_enc_key = 4;
+  string s_nwk_s_int_key = 8;
+  string f_nwk_s_int_key = 9;
+  uint32 f_cnt_up = 5;
+  uint32 n_f_cnt_down = 6;
+  uint32 a_f_cnt_down = 10;
+}
+
+message ActivateDeviceRequest {
+  DeviceActivation device_activation = 1;
+}
+
+message DeactivateDeviceRequest {
+  string dev_eui = 1;
+}
+
+message GetDeviceActivationRequest {
+  string dev_eui = 1;
+}
+
+message GetDeviceActivationResponse {
+  DeviceActivation device_activation = 1;
+  common.JoinServerContext join_server_context = 2;
+}
+
+message GetRandomDevAddrRequest {
+  string dev_eui = 1;
+}
+
+message GetRandomDevAddrResponse {
+  string dev_addr = 1;
+}
+
+message GetDeviceMetricsRequest {
+  string dev_eui = 1;
+  google.protobuf.Timestamp start = 2;
+  google.protobuf.Timestamp end = 3;
+  common.Aggregation aggregation = 4;
+}
+
+message GetDeviceMetricsResponse {
+  map<string, common.Metric> metrics = 1;
+
+  map<string, DeviceState> states = 2;
+}
+
+message DeviceState {
+  string name = 2;
+  string value = 3;
+}
+
+message GetDeviceLinkMetricsRequest {
+  string dev_eui = 1;
+  google.protobuf.Timestamp start = 2;
+  google.protobuf.Timestamp end = 3;
+  common.Aggregation aggregation = 4;
+}
+
+message GetDeviceLinkMetricsResponse {
+  common.Metric rx_packets = 1;
+  common.Metric gw_rssi = 2;
+  common.Metric gw_snr = 3;
+  common.Metric rx_packets_per_freq = 4;
+  common.Metric rx_packets_per_dr = 5;
+  common.Metric errors = 6;
+}
+
+message DeviceQueueItem {
+  string id = 1;
+  string dev_eui = 2;
+  bool confirmed = 3;
+  uint32 f_port = 4;
+  bytes data = 5;
+  google.protobuf.Struct object = 6;
+  bool is_pending = 7;
+  uint32 f_cnt_down = 8;
+  bool is_encrypted = 9;
+  google.protobuf.Timestamp expires_at = 10;
+}
+
+message EnqueueDeviceQueueItemRequest { DeviceQueueItem queue_item = 1; }
+
+message EnqueueDeviceQueueItemResponse {
+  string id = 1;
+}
+
+message FlushDeviceQueueRequest {
+  string dev_eui = 1;
+}
+
+message GetDeviceQueueItemsRequest {
+  string dev_eui = 1;
+  bool count_only = 2;
+}
+
+message GetDeviceQueueItemsResponse {
+  uint32 total_count = 1;
+  repeated DeviceQueueItem result = 2;
+}
+
+message FlushDevNoncesRequest {
+  string dev_eui = 1;
+}
+
+message GetDeviceNextFCntDownRequest {
+  string dev_eui = 1;
+}
+
+message GetDeviceNextFCntDownResponse {
+  uint32 f_cnt_down = 1;
+}
