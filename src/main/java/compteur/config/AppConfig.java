@@ -1,10 +1,10 @@
 package compteur.config;
 
+import compteur.grpc.ChirpstackGatewayGrpcClient;
 import compteur.grpc.ChirpstackGrpcClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
 @Configuration
 public class AppConfig {
 
@@ -17,6 +17,8 @@ public class AppConfig {
     @Value("${chirpstack.api.token}")
     private String apiToken;
 
+    @Value("${chirpstack.tenant-id}")
+    private String tenantId;
 
     @Bean
     public ChirpstackGrpcClient chirpstackGrpcClient() {
@@ -26,5 +28,18 @@ public class AppConfig {
                 apiToken,
                 30
         );
+    }
+
+    @Bean
+    public ChirpstackGatewayGrpcClient chirpstackGatewayGrpcClient() {
+        return new ChirpstackGatewayGrpcClient(
+                chirpstackHost,
+                chirpstackPort,
+                apiToken,
+                30
+        );
+    }
+    public String getTenantId() {
+        return tenantId;
     }
 }

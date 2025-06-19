@@ -1,0 +1,32 @@
+spring:
+  application:
+    name: compteur
+  datasource:
+    url: jdbc:mysql://localhost:3306/compteurs
+    username: root
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+server:
+  port: 8085
+
+chirpstack:
+  api:
+    token: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJjaGlycHN0YWNrIiwiaXNzIjoiY2hpcnBzdGFjayIsInN1YiI6ImUwZjVlMWE2LWQyYWYtNDU4Mi05YjBiLWNjMzk1YWQ4YzlhMSIsInR5cCI6ImtleSJ9.AatL7c6A7mcdnAuG5vTxjbi_fFL-DaWkZw11Q-_Pi5Y
+  grpc:
+    host: localhost
+    port: 8080
+  tenant-id: 91db51f1-34cf-41e4-b03d-baa6dd0a90e4
+  default:
+    application-id: 2831dc6e-4478-4509-bd3a-f46b54761a42
+    device-profile-id: 3b2fd9db-282b-40f8-8967-ff0f93696f66
+
+grpc:
+  client:
+    chirpstack:
+      address: static://localhost:9090
+      negotiation-type: plaintext
+      enable-keep-alive: true

@@ -7,6 +7,7 @@ import compteur.mapper.DeviceMapper;
 import compteur.repository.DeviceRepository;
 import compteur.service.DeviceService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,11 +23,31 @@ public class DeviceServiceImpl implements DeviceService {
     private final DeviceMapper deviceMapper;
     private final ChirpstackGrpcClient grpcClient;
 
+    @Value("${chirpstack.default.application-id}")
+    private String defaultApplicationId;
+
+    @Value("${chirpstack.default.device-profile-id}")
+    private String defaultDeviceProfileId;
+
     @Override
     public void createDevice(DeviceDTO deviceDTO) {
         Device device = deviceMapper.toEntity(deviceDTO);
-        String appId = convertToValidUuid(device.getApplicationId());
-        String profileId = convertToValidUuid(device.getDeviceProfileId());
+
+        // Utilisation des valeurs par défaut si les champs sont vides ou nuls
+        String appId = convertToValidUuid(
+                (device.getApplicationId() == null || device.getApplicationId().isBlank())
+                        ? defaultApplicationId
+                        : device.getApplicationId()
+        );
+
+        String profileId = convertToValidUuid(
+                (device.getDeviceProfileId() == null || device.getDeviceProfileId().isBlank())
+                        ? defaultDeviceProfileId
+                        : device.getDeviceProfileId()
+        );
+
+        device.setApplicationId(appId);
+        device.setDeviceProfileId(profileId);
 
         deviceRepository.save(device);
         grpcClient.createDevice(device.getDevEui(), device.getName(), device.getDescription(), appId, profileId);
@@ -35,8 +56,21 @@ public class DeviceServiceImpl implements DeviceService {
     @Override
     public void updateDevice(DeviceDTO deviceDTO) {
         Device device = deviceMapper.toEntity(deviceDTO);
-        String appId = convertToValidUuid(device.getApplicationId());
-        String profileId = convertToValidUuid(device.getDeviceProfileId());
+
+        String appId = convertToValidUuid(
+                (device.getApplicationId() == null || device.getApplicationId().isBlank())
+                        ? defaultApplicationId
+                        : device.getApplicationId()
+        );
+
+        String profileId = convertToValidUuid(
+                (device.getDeviceProfileId() == null || device.getDeviceProfileId().isBlank())
+                        ? defaultDeviceProfileId
+                        : device.getDeviceProfileId()
+        );
+
+        device.setApplicationId(appId);
+        device.setDeviceProfileId(profileId);
 
         deviceRepository.save(device);
         grpcClient.updateDevice(device.getDevEui(), device.getName(), device.getDescription(), appId, profileId);
